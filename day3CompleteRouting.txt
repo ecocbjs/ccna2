@@ -183,11 +183,12 @@ exit
 Interface E3/3
 no shutdown 
 ip add 208.8.8.100 255.255.255.0
-ip ospf area 0
+ip ospf 1 area 0
 exit 
 router eigrp 100 
 network 208.8.8.0 0.0.0.255
 end
+
 D1:
 config t
 router eigrp 100
@@ -478,6 +479,7 @@ Howt to configure Site 2 site VPN JP to PH:
 https://
 
 TASK6: FUndamentals of Cisco network Security:
+
 
 
 
