@@ -174,6 +174,8 @@ ip route 0.0.0.0  0.0.0.0 10.2.1.2 1
 ip route 0.0.0.0  0.0.0.0 10.2.1.1 2
 do sh ip route static
 
+KUNG GUSTO 100K TO 200K, MATUTUO MAG PACKET ANALYSIS USING WWIRESHARK.
+
 D1:
 config t
 router eigrp 100
@@ -464,5 +466,6 @@ Howt to configure Site 2 site VPN JP to PH:
 https://
 
 TASK6: FUndamentals of Cisco network Security:
+
 
 
