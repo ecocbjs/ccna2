@@ -1,0 +1,221 @@
+edge
+coretaas
+corebaba
+cucm jumped
+
+
+Day 2 routing: 
+
+config t
+int e1/0
+ no shut
+ ip add 192.168.1.133 255.255.255.224
+ do bp
+!These are floating Default Static routes with redundancy
+ ip route 0.0.0.0 0.0.0.0 192.168.1.129 1
+ ip route 0.0.0.0 0.0.0.0 192.168.1.130 5
+ do sh ip route static
+
+config T
+ip route 0.0.0.0  0.0.0.0 10.2.1.1 1
+ip route 0.0.0.0  0.0.0.0 10.2.1.2 5
+!floating Static Routes
+do sh ip route static
+
+config T
+ip route 0.0.0.0  0.0.0.0 10.2.1.1 5
+ip route 0.0.0.0  0.0.0.0 10.2.1.2 1
+!floating Static Routes
+do sh ip route static
+
+config t 
+router eigrp 100 
+no auto-summary
+network 10.1.4.4. 0.0.0.3
+network 10.1.4.8  0.0.0.3
+end 
+sh ip eigrp neighbor
+
+
+legend routing 
+
+
+
+
+ipv6 compression rules:
+1. all zeros on the left are omitted.
+	:000a: > :a:
+2. subsequent zeros turn into double colon 
+	:0000:0000:0000: > ::
+3. when there are two subsequnet zeros left to right will be the case.
+
+:a:c::/64
+::/0
+fe80::a:0:0:f/64
+2002:6500:0:3000::/64
+::1/128 = loopback ipv6 address
+ff00::beef:a00a:aa0:0:0/8
+
+binary	vs	dec	vs	hex
+
+0000		0	
+0001		1
+0010		2	
+0011		3
+0100		4
+0101		5
+0110		6
+0111		7
+1000		8
+1001		9
+1010		10		A
+1011		11		B
+1100		12		C
+1101		13		D
+1110		14		E
+1111		15		F
+		16		10
+EXAMPLE:
+/27
+FOR IPV4: = (4TH OCTET, 32i)
+FOR IPV6: = (2ND HEXTET, 3RD HEXADECIMAL, 2i)
+
+/100 = 7TH HEXTET, 1ST HEXADECIMAL, 1i
+
+/70 = 5th hextet, 2nd hexadecimal, 4i 
+/53 = 4th hextet, 2nd hexadecimal, 8i
+
+
+ipv6 subnetting:
+
+examples:
+
+1. design an ipv6 networkfor 48 users using the available ipv6 address space of fec0:aabb:fafa:dada::/64
+C: 48 users = 6 bits
+S: 128 (constant for ipv6) - 6bits = /122 (8th, 3rd, 4i)
+I: ipasok si 4i sa 8th hex, 3rd hexadecimal
+
+fec0:aabb:fafa:dada:0000:0000:0000:0000/122 (expanded ipv6 address) 
+
+new answer: fec0:aabb:fafa:dada:0000:0000:0000:0040/122
+
+2. design an ipv6 networkfor 900 users using the available ipv6 address space of 2001:db8::/64
+C: 900 = 10 bits
+S: 128 - 10 = /118 (8th hextet, 2nd hexadecimal, 4i)
+I: ipasok si 4i sa 8th hex, 2nd hexadecimal
+2001:0db8:0000:0000:0000:0000:0000:0000:/118 (expanded add)
+2001:0db8:0000:0000:0000:0000:0000:0400:/118 (final answer)
+
+Network: 2001:0db8:0000:0000:0000:0000:0000:0400:/118
+First valid (+1):
+2001:0db8:0000:0000:0000:0000:0000:0401:/118
+Last valid: (-1 not):
+2001:0db8:0000:0000:0000:0000:0000:07ff:/118
+not network: 
+2001:0db8:0000:0000:0000:0000:0000:0800:/118
+
+
+1. design an ipv6 networkfor 98 users using the available ipv6 address space of 2001:db8:a0::/64
+
+C:98 = 7 bits 
+S: 128 - 7 = /121 ( 8th hextet, 3rd hexadecimal, 8i 
+I: ipasok 8i sa 8th hex, 3rd hexadecimal 
+
+2001:0db8:00a0:0000:0000:0000:0000:0000 /121
+network: 2001:0db8:00a0:0000:0000:0000:0000:0080 /121
+first valid: 2001:0db8:00a0:0000:0000:0000:0000:0081
+last valid: 2001:0db8:00a0:0000:0000:0000:0000:00FF: /121
+not network: 2001:0db8:00a0:0000:0000:0000:0000:0100: /121
+
+
+!@I4 - google
+
+conf t 
+ipv6 unicast-routing
+int e0/0
+no shutdown
+ipv6 add 2001:db8:a0::81/121
+end 
+
+show ipv6 int br
+ping 2001:db8:a0::FF
+
+!@R4
+
+conf t 
+ipv6 unicast-routing
+int e0/0
+no shutdown
+ipv6 add 2001:db8:a0::FF/121
+end 
+
+
+
+
+1. design an ipv6 networkfor 16 sites using the available ipv6 address space of 2001:db8::/56
+C: 16 (sites) = 4 bits 
+A: /56 + 4 bits = /60 (4th hex, 3rd hexa, 1i)
+I: 
+Determine the 3rd site
+
+2001:0db8:0000:0000:0000:0000:0000:0000:0000/60
+1st:               :0000: 
+2nd: 		   :0010:
+3rd:		   :0020:
+	   2001:db8:0:20::/60	
+4th: 		   :0030:
+
+
+Network: 2001:0db8:0000:0020:0000:0000:0000:0000/60
+         2001:db8:0:20::/60	
+first valid: 2001:db8:0:20::1/60	
+last valid: 2001:db8:0:2F:FFFF:FFFF:FFFF:FFFF:/60 
+last non-anycast: 
+first anycast (last 128 IPs):
+
+not: 2001:db8:0:30::/60
+
+!@I3
+conf t 
+ipv6 unicast-routing 
+int e0/0
+ipv6 add 2001:db8:0:20::1/60 
+no shut
+end
+
+!@R3
+conf t 
+ipv6 unicast-routing
+int e0/0
+ipv6 add 2001:db8:0:2F:FFFF:FFFF:FFFF:FFFF:/60 
+no shut
+end
+
+!@I2
+conf t 
+ipv6 unicast-routing
+int e0/0
+ipv6 add 2001:db8:0:40::/60 eui-64
+no shut 
+end 
+show ipv6 int brief
+
+!@I1
+conf t 
+ipv6 unicast-routing
+int e0/0
+ipv6 add 2001:db10:0::/64 eui-64
+no shut 
+end 
+show ipv6 int brief
+
+!@R1
+conf t 
+ipv6 unicast-routing
+int e0/0
+ipv6 add autoconfig
+no shut 
+end 
+show ipv6 int brief
+
+SLAAC /64
