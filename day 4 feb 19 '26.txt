@@ -1,0 +1,224 @@
+examples:
+
+1. design an ipv6 network for 79 users using the available ipv6 address space for 2001:db8::/64
+
+C: 79 = 7 bits
+S: /128 - 7 = /121 
+I: (8th , 3rd , 8i)
+2001:db8::/121
+2001:0db8:0000:0000:0000:0000:0000:0000/121
+
+network: 
+2001:0db8:0000:0000:0000:0000:0000:0000/121
+first valid:
+2001:0db8:0000:0000:0000:0000:0000:0800/121
+last valid::
+2001:db8::00ff/121
+not yours:
+2001:db8::0100/121
+
+2. subnet for 128 departments using 2001:db9:2:::/55
+
+determine the 4th deepartment
+
+C: (bit value): 128 = 7 bits 
+A: /55 + 7 bits = /62 
+I: (4th, 4th, 4i)
+
+network: 2001:0db9:0002:0000:0000:0000:0000:0000/55
+first:   2001:0db9:0002:0004:0000:0000:0000:0000/55
+last:	          :0008:
+not yours:        :000C:
+
+!@corebaba
+
+conf t 
+ip domain name ccna.com
+crypto key generate rsa modulus 2048 label key
+ip ssh rsa keypair-name key 
+ip ssh version 2
+!
+line vty 0 14
+login local 
+exit 
+username admin priv 15 secret pass
+end
+
+
+UTM-PH 				NETOPS-PH
+NetAdapters   : NAT		VMNET1
+NetAdapters 2 : VMNet2		VMNET2
+NetAdapters 3 : VMNet3		VMNET3
+NetAdapters 4 : BRIDGED		BRIDGED
+
+UTM-JP				BLDG-JP
+NetAdapters : NAT		VMNET4
+NetAdapters 2 : VMNet2
+NetAdapters 3 : VMNet3
+
+
+jobs of a firewall: 
+1. traffic filtering
+2. transport security (VPN, DMVPN, ZTNA)
+3. threat prevention (NGFW)
+4. network segmentation (NAET, Proxy, DMZ)
+5. monitoring, logging, and alerts
+
+task 1: prevent traffic only on vlan 100 
+
+!@UTM-PH
+config t
+ no ip access-list extended FWP1
+ ip access-list extended FWP1
+  deny ip  host 10.21.100.8  host 10.21.1.11 log
+  
+  permit ip any any
+  exit
+ !
+ int gi 4
+  ip access-group FWP1 in
+  end
+show ip access-list int g4
+
+
+for traceroute: ctrl + shift + 6 para makalabas
+
+ip route 10.0.0.0 255.0.0.0 10.21.1.4
+ip route 10.0.0.0 255.255.255.0 10.21.1.4
+
+
+!@UTM-PH
+
+config t
+ no ip access-list standard NOPORN
+ ip access-list standard NOPORN
+  deny ip host 10.21.1.10 host 10.21.1.11 log
+  deny ip host 10.21.21.1 host 10.21.1.11 log
+  permit ip any any
+  exit
+ !
+ int gi 4
+  ip access-group NOPORN in
+  end
+show ip access-list int g1
+
+nano /etc/resolv.conf
+
+
+task 4 - bet11.com : ssh, ping, sip, sccp, dns
+
+!@UTM-PH
+config t
+ no ip access-list extended FWP10
+ ip access-list extended FWP10
+permit tcp any host bet11.com eq 22 log
+permit icmp any host bet11.com log
+permit tcp any host bet11.com eq 5060 log
+permit tcp any host bet11.com eq 2000 log
+permit tcp any host bet11.com eq 53 log
+  exit
+ !
+ int gi 1
+  ip access-group FWP10 in
+  end
+show ip access-list int g1
+
+
+
+task 5 - bet11.com open the ff ports:
+
+telnet, ftp, smtp, MySQL, http, https
+
+
+config t
+no ip access-list extended FWP11
+ip access-list extended FWP11
+permit tcp any host bet11.com eq 23 log
+permit tcp any host bet11.com eq 21 log
+permit tcp any host bet11.com eq 25 log
+permit tcp any host bet11.com eq 3306 log
+permit tcp any host bet11.com eq 80 log
+permit tcp any host bet11.com eq 443 log
+exit
+ !
+ int gi 1
+  ip access-group FWP11 in
+  end
+show ip access-list int g1
+
+
+
+telnet 23
+ftp 21
+smtp 25
+mysql 3306
+http 80
+https 443
+
+
+
+task 4. create an extended acl for 'bet11.com' that will open the following ports
+SIP, SSH, HTTPS, DNS, SUBMISSION, IMAPS, POP3S, SMTPS, SNMP
+
+
+config t 
+no ip access-list extended FWP11
+ip access-list extended FWP11
+permit tcp any host bet11.com eq 5060 log
+permit tcp any host bet11.com eq 22 log
+permit tcp any host bet11.com eq 443 log
+permit tcp any host bet11.com eq 53 log
+permit tcp any host bet11.com eq 587 log
+permit tcp any host bet11.com eq 993 log
+permit tcp any host bet11.com eq 995 log
+permit tcp any host bet11.com eq 465 log
+permit udp any host bet11.com eq 161 log
+
+exit
+ !
+ int gi 1
+  ip access-group FWP11 in
+  end
+show ip access-list int g1
+
+
+
+conf t
+ int g1
+  ip nat outside
+ int g3
+  ip nat inside
+ !
+no ip access-list extended NAT
+ ip access-list extended NAT
+permit ip any any 
+  exit
+ !
+ ip nat inside source list NAT int g1 overload
+ !
+no ip nat inside source static tcp  11.11.11.111  80  208.8.8.100  8080
+ end
+
+
+!@UTM-PH
+conf t 
+int g4
+ip nat inside
+no ip nat inside source static tcp 10.21.1.4  23  208.8.8.100 2323
+ip nat inside source static tcp 10.21.1.4  23   208.8.8.100 2000
+ip nat inside source static tcp 10.21.100.8  23   208.8.8.99 2323
+end
+
+
+conf t
+ ip nat inside source static tcp  10.42.1.4  23  200.0.0.42  4023
+ !
+ ip nat inside source static tcp  10.42.100.8 23  200.0.0.42  4023
+ ip nat inside source static tcp  10.42.1.6  22  200.0.0.42  4023
+ end
+
+
+conf t 
+no ip route 0.0.0.0 0.0.0.0 208.8.8.2
+
+

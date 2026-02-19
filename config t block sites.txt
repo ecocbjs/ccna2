@@ -1,0 +1,49 @@
+config t
+no ip access-list standard NOPORN
+ip access-list standard NOPORN
+deny 66.254.114.0 	0.0.0.255 
+deny host 104.21.5.229
+deny host 103.224.182.211
+deny host 172.237.146.38
+deny host 208.77.20.35
+permit any
+int gi 1
+ip access-group NOPORN in
+end
+show ip access-list int g1
+
+for unblock: 
+
+conf t
+int gi 1
+no ip access-group NOTORS in
+end
+show ip access-list int g1
+
+
+create a standard acl named notor to block the ff:
+
+www.thepiratebay.org	162.159.0.0	0.0.255.255
+www.limetorrents.com	172.67.0.0	0.0.255.255
+www.freeanimeonline.com	76.223.0.0	0.0.255.255
+www.torlock2.com	104.21.0.0	0.0.255.255
+www.hentaisites.com	104.21.0.0	0.0.255.255
+www.iptorrents.com	104.26.0.0	0.0.255.255
+
+config t
+no ip access-list standard NOTOR
+ip access-list standard NOTOR
+deny 162.159.0.0 0.0.255.255
+deny 172.67.0.0 0.0.255.255
+deny 76.223.0.0 0.0.255.255
+deny 104.21.0.0 0.0.255.255
+deny 104.26.0.0 0.0.255.255
+permit any
+int gi 1
+ip access-group NOTOR in
+end
+show ip access-list int g1
+
+
+
+
