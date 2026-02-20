@@ -1,0 +1,36 @@
+lan traffic: 
+
+unicast 
+
+broadcast: layer 2 traffic mac address is 12 f
+
+multicast 01 00 5e
+
+how to a network engineer in 2026:
+step: 1 unique resume = 1 company
+
+use chatgpt to modify: resume as per JD
+
+step 2: big risks, big reward
+ypu: ccna pasado
+cash: 320 usd 
+brains and sipag:
+
+
+@SW101
+
+conf t 
+ip routing
+int e0/0
+no switchport
+ip add 10.20.16.1 255.255.240.0
+ipv6 add 2001:db8:acca::/60 eui-64 
+
+@SW102
+
+conf t 
+ip routing
+int e0/0
+no switchport
+ip add 10.20.31.254 255.255.240.0
+ipv6 add 2001:db8:acca::/60 eui-64
